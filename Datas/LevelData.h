@@ -38,6 +38,7 @@ public:
 		{
 		case Key::ENTER:
 		{
+			GameSingleton::Get().GetLevelController().GoToNextLevel();
 			break;
 		}
 		default: return;
@@ -99,6 +100,7 @@ public:
 			}
 		case Key::ENTER:
 			{
+			GameSingleton::Get().GetLevelController().GoToNextLevel();
 			break;
 			}
 		default: return;
@@ -124,3 +126,7 @@ private:
 
 	int32_t m_CurrentDimentionAmount = DEFAULT_DIMENTION;
 };
+
+
+static EntryLevel s_EntryLevel;
+static ChooseDimentionLevel s_ChooseDimentionLevel;

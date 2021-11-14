@@ -3,14 +3,18 @@
 #include <iostream>
 #include <Windows.h>
 
+#include "GameSingleton.h"
+#include "Interfaces/ILevel.h"
+
 void Renderer::Tick(float InDeltaTime)
 {
 	Draw();
 
+	ILevel* CurrentLevel = GameSingleton::Get().GetLevelController().GetCurrentLevel();
 	// Add assert
-	if (m_CurrentLevel)
+	if (CurrentLevel)
 	{
-		m_CurrentLevel->ProcessInput();
+		CurrentLevel->ProcessInput();
 	}
 
 	StabilizeConsoleOutput();
@@ -18,10 +22,12 @@ void Renderer::Tick(float InDeltaTime)
 
 void Renderer::Draw()
 {
+	ILevel* CurrentLevel = GameSingleton::Get().GetLevelController().GetCurrentLevel();
+
 	// Add assert
-	if (m_CurrentLevel)
+	if (CurrentLevel) 
 	{
-		std::cout << m_CurrentLevel->GetLevelAsString();
+		std::cout << CurrentLevel->GetLevelAsString();
 	}
 }
 

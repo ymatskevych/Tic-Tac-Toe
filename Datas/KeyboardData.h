@@ -6,7 +6,7 @@ enum class Key
 
 	UP    = 72,
 	DOWN  = 80,
-	ENTER = 32,
+	ENTER = 13,
 
 	MAX
 };
