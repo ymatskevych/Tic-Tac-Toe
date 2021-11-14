@@ -7,25 +7,20 @@ void Ticker::Tick()
 	{
 		for (ITickable* Tickable : m_Tickables)
 		{
-			// Add assert
-			if (Tickable)
-			{
-				Tickable->Tick(m_DeltaTime);
-			}
+			_STL_VERIFY(Tickable, "[Ticker]: Tickable is nullptr");
+
+			Tickable->Tick(m_DeltaTime);
 		}
 		Time = static_cast<float>(clock());
 	}
 
 	const HANDLE Handle = GetStdHandle(STD_OUTPUT_HANDLE);
-	// Add assert
-	if (Handle)
-	{
-		SetConsoleCursorPosition(Handle, { 0,0 });
-	}
+	_STL_VERIFY(Handle, "[Ticker]: Handle is nullptr");
+	SetConsoleCursorPosition(Handle, { 0,0 });
 }
 
 void Ticker::AddTickable(ITickable* InTickable)
 {
-	// Add assert
+	_STL_VERIFY(InTickable, "[Ticker]: InTickable is nullptr");
 	m_Tickables.push_back(InTickable);
 }

@@ -11,11 +11,8 @@ void Renderer::Tick(float InDeltaTime)
 	Draw();
 
 	ILevel* CurrentLevel = GameSingleton::Get().GetLevelController().GetCurrentLevel();
-	// Add assert
-	if (CurrentLevel)
-	{
-		CurrentLevel->ProcessInput();
-	}
+	_STL_VERIFY(CurrentLevel, "[Renderer]: CurrentLevel is nullptr");
+	CurrentLevel->ProcessInput();
 
 	StabilizeConsoleOutput();
 }
@@ -23,12 +20,8 @@ void Renderer::Tick(float InDeltaTime)
 void Renderer::Draw()
 {
 	ILevel* CurrentLevel = GameSingleton::Get().GetLevelController().GetCurrentLevel();
-
-	// Add assert
-	if (CurrentLevel) 
-	{
-		std::cout << CurrentLevel->GetLevelAsString();
-	}
+	_STL_VERIFY(CurrentLevel, "[Renderer]: CurrentLevel is nullptr");
+	std::cout << CurrentLevel->GetLevelAsString();
 }
 
 void Renderer::StabilizeConsoleOutput()
