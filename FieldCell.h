@@ -24,8 +24,20 @@ public:
 		m_Coord = Coord;
 	}
 
-	void FillCell()
+	void FillCell(bool IsZero)
 	{
+		if (IsZero)
+		{
+			if (m_Status == EFieldCellStatus::SELECTED)
+			{
+				// gamesingleton.getplayetype
+				m_Status = EFieldCellStatus::ZERO_SELECTED;
+			}
+			else
+			{
+				m_Status = EFieldCellStatus::ZERO;
+			}
+		}
 		if (m_Status == EFieldCellStatus::SELECTED)
 		{
 			// gamesingleton.getplayetype
@@ -65,6 +77,43 @@ public:
 		}
 	}
 
+	void SetZero()
+	{
+		if (m_Status == EFieldCellStatus::SELECTED)
+		{
+			m_Status = EFieldCellStatus::ZERO_SELECTED;
+		}
+		else
+		{
+			m_Status = EFieldCellStatus::ZERO;
+		}
+	}
+
+	void SetCross()
+	{
+		if (m_Status == EFieldCellStatus::SELECTED)
+		{
+			m_Status = EFieldCellStatus::CROSS_SELECTED;
+		}
+		else
+		{
+			m_Status = EFieldCellStatus::CROSS;
+		}
+	}
+
+	void SetEmpty()
+	{
+		if (m_Status == EFieldCellStatus::CROSS_SELECTED
+			|| m_Status == EFieldCellStatus::ZERO_SELECTED)
+		{
+			m_Status = EFieldCellStatus::SELECTED;
+		}
+		else
+		{
+			m_Status = EFieldCellStatus::EMPTY;
+		}
+	}
+
 	std::string GetSymbol()
 	{
 		if (m_Status == EFieldCellStatus::CROSS)
@@ -90,6 +139,11 @@ public:
 	bool IsCross() const
 	{
 		return m_Status == EFieldCellStatus::CROSS || m_Status == EFieldCellStatus::CROSS_SELECTED;
+	}
+
+	bool IsZero() const
+	{
+		return m_Status == EFieldCellStatus::ZERO || m_Status == EFieldCellStatus::ZERO_SELECTED;
 	}
 
 	bool IsEmpty() const

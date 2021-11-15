@@ -2,6 +2,7 @@
 #include <vector>
 
 #include "FieldCell.h"
+#include "Datas/GameData.h"
 #include "Interfaces/ITickable.h"
 
 /*
@@ -17,12 +18,18 @@ public:
 	void ProcessInput();
 	std::string GetFieldAsString();
 
-private:
+//private:
 
-	void FillCell();
+	void FillCell(bool IsZero);
 	void SelectCell();
 
-	bool CheckForWin();
+	bool CheckForWinCross();
+	bool CheckForWinZero();
+	bool CheckForDraw();
+
+	int32_t Minimax(Field* CopyField, int32_t depth, bool IsMaximazing);
+
+	FieldCell* GetBestMove();
 
 	FieldCell* GetCell(int32_t InX, int32_t InY);
 
@@ -34,5 +41,5 @@ private:
 	int32_t m_XCursor = 0;
 	int32_t m_YCursor = 0;
 
-	int32_t m_DimentionAmount = 8;
+	int32_t m_DimentionAmount = DEFAULT_DIMENTION;
 };

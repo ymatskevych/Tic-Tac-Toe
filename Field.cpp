@@ -13,6 +13,8 @@ void Field::GenerateCells()
 			m_Cells.push_back(FieldCell(x, y));
 		}
 	}
+
+	SelectCell();
 }
 
 void Field::Tick(float InDeltaTime)
@@ -50,8 +52,14 @@ void Field::ProcessInput()
 	}
 	case Key::ENTER:
 	{
-		FillCell();
-		if (CheckForWin())
+		FillCell(false);
+		if (CheckForWinCross())
+		{
+			system("Pause");
+		}
+
+		GetBestMove()->FillCell(true);
+		if (CheckForWinZero())
 		{
 			system("Pause");
 		}
@@ -63,11 +71,11 @@ void Field::ProcessInput()
 	SelectCell();
 }
 
-void Field::FillCell()
+void Field::FillCell(bool IsZero)
 {
 	if (SelectedCell)
 	{
-		SelectedCell->FillCell();
+		SelectedCell->FillCell(IsZero);
 	}
 }
 
@@ -82,7 +90,7 @@ void Field::SelectCell()
 	SelectedCell->SetSelected();
 }
 
-bool Field::CheckForWin()
+bool Field::CheckForWinCross()
 {
 	// Check columns
 	bool IsDiagonal = true;
@@ -137,6 +145,157 @@ bool Field::CheckForWin()
 	}
 
 	return false;
+}
+
+bool Field::CheckForWinZero()
+{
+	// Check columns
+	bool IsDiagonal = true;
+	for (int32_t x = 0; x < m_DimentionAmount; ++x)
+	{
+		bool IsRowWinner = true;
+		for (int32_t y = 0; y < m_DimentionAmount; ++y)
+		{
+			if (!GetCell(x, y)->IsZero() || GetCell(x, y)->IsEmpty())
+			{
+				if (x == y)
+				{
+					IsDiagonal = false;
+				}
+				IsRowWinner = false;
+			}
+		}
+		if (IsRowWinner)
+		{
+			return true;
+		}
+	}
+	if (IsDiagonal)
+	{
+		return true;
+	}
+
+	// Check rows
+	IsDiagonal = true;
+	for (int32_t y = 0; y < m_DimentionAmount; ++y)
+	{
+		bool IsRowWinner = true;
+		for (int32_t x = 0; x < m_DimentionAmount; ++x)
+		{
+			if (!GetCell(x, y)->IsZero() || GetCell(x, y)->IsEmpty())
+			{
+				if (x + y == m_DimentionAmount - 1)
+				{
+					IsDiagonal = false;
+				}
+				IsRowWinner = false;
+			}
+		}
+		if (IsRowWinner)
+		{
+			return true;
+		}
+	}
+	if (IsDiagonal)
+	{
+		return true;
+	}
+
+	return false;
+}
+
+bool Field::CheckForDraw()
+{
+	for (int32_t x = 0; x < m_DimentionAmount; ++x)
+	{
+		for (int32_t y = 0; y < m_DimentionAmount; ++y)
+		{
+			if (GetCell(x, y)->IsEmpty())
+			{
+				return false;
+			}
+		}
+	}
+	return true;
+}
+
+int32_t Field::Minimax(Field* CopyField, int32_t depth, bool IsMaximazing)
+{
+	if (CopyField->CheckForWinZero())
+	{
+		return 1;
+	}
+	if (CopyField->CheckForWinCross())
+	{
+		return -1;
+	}
+	if (CopyField->CheckForDraw())
+	{
+		return 0;
+	}
+
+	if (IsMaximazing)
+	{
+		int32_t BestScore = IsMaximazing ? -10000 : 10000;
+		for (int32_t x = 0; x < m_DimentionAmount; ++x)
+		{
+			for (int32_t y = 0; y < m_DimentionAmount; ++y)
+			{
+				if (CopyField->GetCell(x, y)->IsEmpty())
+				{
+					CopyField->GetCell(x, y)->SetZero();
+					BestScore = std::max(BestScore, CopyField->Minimax(CopyField, depth + 1, false));
+					//CopyField->GetCell(x, y)->SetEmpty();
+				}
+			}
+		}
+		return BestScore;
+	}
+	else
+	{
+		int32_t BestScore = 10000;
+		for (int32_t x = 0; x < m_DimentionAmount; ++x)
+		{
+			for (int32_t y = 0; y < m_DimentionAmount; ++y)
+			{
+				if (CopyField->GetCell(x, y)->IsEmpty())
+				{
+					CopyField->GetCell(x, y)->SetCross();
+					BestScore = std::min(BestScore, CopyField->Minimax(CopyField, depth + 1, true));
+					//CopyField->GetCell(x, y)->SetEmpty();
+				}
+			}
+		}
+		return BestScore;
+	}
+}
+
+FieldCell* Field::GetBestMove()
+{
+	int32_t BestScore = -100000;
+	FieldCell* BestCell = nullptr;
+
+	for (int32_t x = 0; x < m_DimentionAmount; ++x)
+	{
+		for (int32_t y = 0; y < m_DimentionAmount; ++y)
+		{
+			if (GetCell(x, y)->IsEmpty())
+			{
+				Field Copy = *this;
+				Copy.GetCell(x, y)->SetZero();
+				const int32_t Score = Minimax(&Copy, 0, false);
+				//GetCell(x, y)->SetEmpty();
+
+				if (Score > BestScore)
+				{
+					BestScore = Score;
+					BestCell = GetCell(x, y);
+				}
+			}
+		}
+	}
+
+	return BestCell;
 }
 
 std::string Field::GetFieldAsString()
