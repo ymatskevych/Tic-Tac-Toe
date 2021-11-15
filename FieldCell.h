@@ -86,10 +86,20 @@ public:
 		}
 		return " ";
 	}
+
+	bool IsCross() const
+	{
+		return m_Status == EFieldCellStatus::CROSS || m_Status == EFieldCellStatus::CROSS_SELECTED;
+	}
+
+	bool IsEmpty() const
+	{
+		return m_Status == EFieldCellStatus::EMPTY;
+	}
 	
 private:
 
-	EFieldCellStatus m_Status = EFieldCellStatus::None;
+	EFieldCellStatus m_Status = EFieldCellStatus::EMPTY;
 
 	FieldCellCoord m_Coord;
 };

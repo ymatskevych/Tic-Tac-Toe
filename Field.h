@@ -22,6 +22,8 @@ private:
 	void FillCell();
 	void SelectCell();
 
+	bool CheckForWin();
+
 	FieldCell* GetCell(int32_t InX, int32_t InY);
 
 	std::vector<FieldCell> m_Cells;

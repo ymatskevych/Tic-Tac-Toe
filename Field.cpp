@@ -51,6 +51,10 @@ void Field::ProcessInput()
 	case Key::ENTER:
 	{
 		FillCell();
+		if (CheckForWin())
+		{
+			system("Pause");
+		}
 		break;
 	}
 	default: break;
@@ -76,6 +80,63 @@ void Field::SelectCell()
 
 	SelectedCell = GetCell(m_YCursor, m_XCursor);
 	SelectedCell->SetSelected();
+}
+
+bool Field::CheckForWin()
+{
+	// Check columns
+	bool IsDiagonal = true;
+	for (int32_t x = 0; x < m_DimentionAmount; ++x)
+	{
+		bool IsRowWinner = true;
+		for (int32_t y = 0; y < m_DimentionAmount; ++y)
+		{
+			if (!GetCell(x, y)->IsCross() || GetCell(x, y)->IsEmpty())
+			{
+				if (x == y)
+				{
+					IsDiagonal = false;
+				}
+				IsRowWinner = false;
+			}
+		}
+		if (IsRowWinner)
+		{
+			return true;
+		}
+	}
+	if (IsDiagonal)
+	{
+		return true;
+	}
+
+	// Check rows
+	IsDiagonal = true;
+	for (int32_t y = 0; y < m_DimentionAmount; ++y)
+	{
+		bool IsRowWinner = true;
+		for (int32_t x = 0; x < m_DimentionAmount; ++x)
+		{
+			if (!GetCell(x, y)->IsCross() || GetCell(x, y)->IsEmpty())
+			{
+				if (x + y == m_DimentionAmount - 1)
+				{
+					IsDiagonal = false;
+				}
+				IsRowWinner = false;
+			}
+		}
+		if (IsRowWinner)
+		{
+			return true;
+		}
+	}
+	if (IsDiagonal)
+	{
+		return true;
+	}
+
+	return false;
 }
 
 std::string Field::GetFieldAsString()
