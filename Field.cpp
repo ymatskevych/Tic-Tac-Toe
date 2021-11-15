@@ -297,7 +297,7 @@ FieldCell* Field::GetBestMove()
 			{
 				Field Copy = *this;
 				Copy.GetCell(x, y)->SetToken(GameSingleton::Get().GetAIPlayerType());
-				const int32_t Score = Minimax(&Copy, true);
+				const int32_t Score = Minimax(&Copy, false);
 				Copy.GetCell(x, y)->SetEmpty();
 
 				if (Score > BestScore)
