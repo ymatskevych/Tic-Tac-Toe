@@ -55,6 +55,11 @@ void Field::ProcessInput()
 	}
 	case Key::ENTER:
 	{
+		if (SelectedCell && !SelectedCell->IsEmpty())
+		{
+			break;
+		}
+
 		FillCell(GameSingleton::Get().GetPlayerType());
 		if (CheckForDraw())
 		{
@@ -229,7 +234,8 @@ bool Field::CheckForDraw()
 	return true;
 }
 
-int32_t Field::Minimax(Field* CopyField, int32_t depth, bool IsMaximazing)
+// TODO: Add validity checks
+int32_t Field::Minimax(Field* CopyField, bool IsMaximazing)
 {
 	if (CopyField->CheckForWinZero())
 	{
@@ -246,7 +252,7 @@ int32_t Field::Minimax(Field* CopyField, int32_t depth, bool IsMaximazing)
 
 	if (IsMaximazing)
 	{
-		int32_t BestScore = IsMaximazing ? -10000 : 10000;
+		int32_t BestScore = -10000;
 		for (int32_t x = 0; x < m_DimentionAmount; ++x)
 		{
 			for (int32_t y = 0; y < m_DimentionAmount; ++y)
@@ -254,8 +260,7 @@ int32_t Field::Minimax(Field* CopyField, int32_t depth, bool IsMaximazing)
 				if (CopyField->GetCell(x, y)->IsEmpty())
 				{
 					CopyField->GetCell(x, y)->SetToken(GameSingleton::Get().GetAIPlayerType());
-					BestScore = std::max(BestScore, CopyField->Minimax(CopyField, depth + 1, false));
-					//CopyField->GetCell(x, y)->SetEmpty();
+					BestScore = std::max(BestScore, CopyField->Minimax(CopyField, false));
 				}
 			}
 		}
@@ -271,7 +276,7 @@ int32_t Field::Minimax(Field* CopyField, int32_t depth, bool IsMaximazing)
 				if (CopyField->GetCell(x, y)->IsEmpty())
 				{
 					CopyField->GetCell(x, y)->SetToken(GameSingleton::Get().GetPlayerType());
-					BestScore = std::min(BestScore, CopyField->Minimax(CopyField, depth + 1, true));
+					BestScore = std::min(BestScore, CopyField->Minimax(CopyField, true));
 				}
 			}
 		}
@@ -292,7 +297,8 @@ FieldCell* Field::GetBestMove()
 			{
 				Field Copy = *this;
 				Copy.GetCell(x, y)->SetToken(GameSingleton::Get().GetAIPlayerType());
-				const int32_t Score = Minimax(&Copy, 0, false);
+				const int32_t Score = Minimax(&Copy, true);
+				Copy.GetCell(x, y)->SetEmpty();
 
 				if (Score > BestScore)
 				{

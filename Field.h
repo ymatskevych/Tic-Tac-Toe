@@ -44,7 +44,7 @@ private:
 	bool CheckForWinZero();
 	bool CheckForDraw();
 
-	int32_t Minimax(Field* CopyField, int32_t depth, bool IsMaximazing);
+	int32_t Minimax(Field* CopyField, bool IsMaximazing);
 
 	FieldCell* GetBestMove();
 

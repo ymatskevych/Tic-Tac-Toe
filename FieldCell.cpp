@@ -105,5 +105,5 @@ bool FieldCell::IsZero() const
 
 bool FieldCell::IsEmpty() const
 {
-	return m_Status == EFieldCellStatus::EMPTY;
+	return m_Status == EFieldCellStatus::EMPTY || m_Status == EFieldCellStatus::SELECTED;
 }
