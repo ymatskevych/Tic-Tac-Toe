@@ -11,4 +11,5 @@ void GameSingleton::Initialize()
 	m_Field.GenerateCells();
 
 	m_LevelController.AddLevel(&s_FieldLevel);
+	m_LevelController.AddLevel(&s_FinishLevel);
 }

@@ -22,10 +22,14 @@ class Field : public ITickable
 {
 public:
 
-	void GenerateCells();
-
+	// ITickable interface
 	void Tick(float InDeltaTime) override;
 	void ProcessInput();
+
+	void GenerateCells();
+	void SetDimentionAmount(int32_t InDimentionAmount) { m_DimentionAmount = InDimentionAmount; }
+	int32_t GetDimentionAmount() const { return m_DimentionAmount; }
+
 	std::string GetFieldAsString();
 
 	EGameResult CheckForGameResult();

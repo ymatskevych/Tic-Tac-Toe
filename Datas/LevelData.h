@@ -20,11 +20,17 @@ public:
 	std::string GetLevelAsString() const override
 	{
 		std::string result;
+		result += "*******";
 		result += GAME_NAME;
+		result += "********";
 		result += "\n";
-		result += "Press ENTER to ";
+		result += "**************************";
 		result += "\n";
-		result += " start the game";
+		result += "*****Press ENTER to*******";
+		result += "\n";
+		result += "*****start the game*******";
+		result += "\n";
+		result += "**************************";
 		result += "\n";
 
 		return result;
@@ -60,25 +66,30 @@ public:
 
 	std::string GetLevelAsString() const override
 	{
-		const std::string DimentionAmount = std::to_string(m_CurrentDimentionAmount);
+		const std::string DimentionAmount = std::to_string(GetChoosenDimentionAmount());
 
 		std::string result;
 		result += "Please, choose amount of dimentions: ";
 		result += "\n";
-		if (m_CurrentDimentionAmount % 10 == 0)
-		{
-			result += " " + DimentionAmount + " x " + DimentionAmount;
-		}
-		else
-		{
-			result += "  " + DimentionAmount + " x " + DimentionAmount;
-		}
-		
+		result += "************************************";
 		result += "\n";
-		result += " \t press UP or DOWN";
+		result += "**************";
+		result += " " + DimentionAmount + " x " + DimentionAmount + " ";
+		result += "***************";
 		result += "\n";
-		result += " \t press ENTER to continue";
+		result += "************************************";
 		result += "\n";
+		result += "**********";
+		result += "press UP or DOWN";
+		result += "**********";
+		result += "\n";
+		result += "*******";
+		result += "press ENTER to continue";
+		result += "******";
+		result += "\n";
+		result += "************************************";
+		result += "\n";
+
 		return result;
 	}
 
@@ -111,22 +122,27 @@ private:
 
 	void DecreaseDimentions()
 	{
-		m_CurrentDimentionAmount = std::max(MIN_DIMENTION, m_CurrentDimentionAmount - 1);
+		GameSingleton::Get().GetField().SetDimentionAmount(std::max(MIN_DIMENTION, GetChoosenDimentionAmount() - 1));
 	}
 
 	void IncreaseDimentions()
 	{
-		m_CurrentDimentionAmount = std::min(m_CurrentDimentionAmount + 1, MAX_DIMENTION);
+		GameSingleton::Get().GetField().SetDimentionAmount(std::min(GetChoosenDimentionAmount() + 1, MAX_DIMENTION));
 	}
 
 	int32_t GetChoosenDimentionAmount() const
 	{
-		return std::min(std::max(MIN_DIMENTION, m_CurrentDimentionAmount), MAX_DIMENTION);
+		return GameSingleton::Get().GetField().GetDimentionAmount();
 	}
-
-	int32_t m_CurrentDimentionAmount = DEFAULT_DIMENTION;
 };
 
+/*
+ *  x | o |
+ * -----------
+ *    | x | o
+ * -----------
+ *    | o | x 
+ */
 class FieldLevel : public ILevel
 {
 	std::string GetLevelAsString() const override
@@ -134,12 +150,42 @@ class FieldLevel : public ILevel
 		return GameSingleton::Get().GetField().GetFieldAsString();
 	}
 
+	void ProcessInput() override { }
+};
+
+class FinishLevel : public ILevel
+{
+	std::string GetLevelAsString() const override
+	{
+		EGameResult GameResult = GameSingleton::Get().GetGameResult();
+
+		std::string result;
+		result += "**************************";
+		result += "\n";
+		if (GameResult == EGameResult::WIN)
+			result += "***********WIN************";
+		else if (GameResult == EGameResult::LOSE)
+			result += "***********LOSE***********";
+		else if (GameResult == EGameResult::DRAW)
+			result += "**********DRAW**********";
+		result += "\n";
+		result += "**************************";
+		result += "\n";
+
+		return result;
+	}
+
 	void ProcessInput() override
 	{
-		
+		const Key LastInput = GameSingleton::Get().GetInputController().GetLastInput();
+		if (LastInput == Key::ENTER)
+		{
+			exit(0);
+		}
 	}
 };
 
 static EntryLevel s_EntryLevel;
 static ChooseDimentionLevel s_ChooseDimentionLevel;
 static FieldLevel s_FieldLevel;
+static FinishLevel s_FinishLevel;

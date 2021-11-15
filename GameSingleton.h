@@ -23,11 +23,16 @@ public:
 	EPlayerType GetPlayerType() const { return m_PlayerType; }
 	EPlayerType GetAIPlayerType() const { return m_AIPlayerType; }
 
+	EGameResult GetGameResult() const { return m_GameResult; }
+	void SetGameResult(EGameResult InGameResult) { m_GameResult = InGameResult; }
+
 private:
 
 	InputController m_InputController;
 	LevelController m_LevelController;
 	Field m_Field;
+
+	EGameResult m_GameResult = EGameResult::None;
 
 	EPlayerType m_PlayerType = EPlayerType::CROSS;
 	EPlayerType m_AIPlayerType = EPlayerType::ZERO;

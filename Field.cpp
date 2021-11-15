@@ -56,15 +56,25 @@ void Field::ProcessInput()
 	case Key::ENTER:
 	{
 		FillCell(GameSingleton::Get().GetPlayerType());
+		if (CheckForDraw())
+		{
+			GameSingleton::Get().GetLevelController().GoToNextLevel();
+			GameSingleton::Get().SetGameResult(EGameResult::DRAW);
+			break;
+		}
 		if (CheckForWinCross())
 		{
-			system("Pause");
+			GameSingleton::Get().GetLevelController().GoToNextLevel();
+			GameSingleton::Get().SetGameResult(EGameResult::WIN);
+			break;
 		}
 
 		GetBestMove()->FillCell(GameSingleton::Get().GetAIPlayerType());
 		if (CheckForWinZero())
 		{
-			system("Pause");
+			GameSingleton::Get().GetLevelController().GoToNextLevel();
+			GameSingleton::Get().SetGameResult(EGameResult::LOSE);
+			break;
 		}
 		break;
 	}
