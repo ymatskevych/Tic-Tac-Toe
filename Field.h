@@ -1,13 +1,23 @@
 #pragma once
+
+#include <string>
 #include <vector>
 
 #include "FieldCell.h"
 #include "Datas/GameData.h"
 #include "Interfaces/ITickable.h"
 
-/*
- * LOGIC
- */
+enum class EPlayerType;
+
+enum class EGameResult
+{
+	None = -2,
+
+	LOSE = -1,
+	DRAW = 0,
+	WIN = 1
+};
+
 class Field : public ITickable
 {
 public:
@@ -18,11 +28,14 @@ public:
 	void ProcessInput();
 	std::string GetFieldAsString();
 
-//private:
+	EGameResult CheckForGameResult();
 
-	void FillCell(bool IsZero);
+private:
+
+	void FillCell(EPlayerType InPlayerType);
 	void SelectCell();
 
+	// TODO: it can be refactored, but not today
 	bool CheckForWinCross();
 	bool CheckForWinZero();
 	bool CheckForDraw();

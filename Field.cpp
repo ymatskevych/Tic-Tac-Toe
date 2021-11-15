@@ -2,6 +2,7 @@
 
 #include <conio.h>
 
+#include "FieldCell.h"
 #include "GameSingleton.h"
 
 void Field::GenerateCells()
@@ -10,10 +11,12 @@ void Field::GenerateCells()
 	{
 		for (int32_t y = 0; y <= m_DimentionAmount; ++y)
 		{
-			m_Cells.push_back(FieldCell(x, y));
+			FieldCell FieldCell;
+			m_Cells.emplace_back(FieldCell);
 		}
 	}
 
+	SelectedCell = &m_Cells.at(0);
 	SelectCell();
 }
 
@@ -52,13 +55,13 @@ void Field::ProcessInput()
 	}
 	case Key::ENTER:
 	{
-		FillCell(false);
+		FillCell(GameSingleton::Get().GetPlayerType());
 		if (CheckForWinCross())
 		{
 			system("Pause");
 		}
 
-		GetBestMove()->FillCell(true);
+		GetBestMove()->FillCell(GameSingleton::Get().GetAIPlayerType());
 		if (CheckForWinZero())
 		{
 			system("Pause");
@@ -71,23 +74,20 @@ void Field::ProcessInput()
 	SelectCell();
 }
 
-void Field::FillCell(bool IsZero)
+void Field::FillCell(EPlayerType InPlayerType)
 {
-	if (SelectedCell)
-	{
-		SelectedCell->FillCell(IsZero);
-	}
+	_STL_VERIFY(SelectedCell, "[Field]: SelectedCell is nullptr");
+	SelectedCell->FillCell(InPlayerType);
 }
 
 void Field::SelectCell()
 {
-	if (SelectedCell)
-	{
-		SelectedCell->UnSelect();
-	}
+	_STL_VERIFY(SelectedCell, "[Field]: SelectedCell is nullptr");
+	SelectedCell->UnSelect();
 
 	SelectedCell = GetCell(m_YCursor, m_XCursor);
-	SelectedCell->SetSelected();
+	_STL_VERIFY(SelectedCell, "[Field]: SelectedCell is nullptr");
+	SelectedCell->Select();
 }
 
 bool Field::CheckForWinCross()
@@ -243,7 +243,7 @@ int32_t Field::Minimax(Field* CopyField, int32_t depth, bool IsMaximazing)
 			{
 				if (CopyField->GetCell(x, y)->IsEmpty())
 				{
-					CopyField->GetCell(x, y)->SetZero();
+					CopyField->GetCell(x, y)->SetToken(GameSingleton::Get().GetAIPlayerType());
 					BestScore = std::max(BestScore, CopyField->Minimax(CopyField, depth + 1, false));
 					//CopyField->GetCell(x, y)->SetEmpty();
 				}
@@ -260,9 +260,8 @@ int32_t Field::Minimax(Field* CopyField, int32_t depth, bool IsMaximazing)
 			{
 				if (CopyField->GetCell(x, y)->IsEmpty())
 				{
-					CopyField->GetCell(x, y)->SetCross();
+					CopyField->GetCell(x, y)->SetToken(GameSingleton::Get().GetPlayerType());
 					BestScore = std::min(BestScore, CopyField->Minimax(CopyField, depth + 1, true));
-					//CopyField->GetCell(x, y)->SetEmpty();
 				}
 			}
 		}
@@ -282,9 +281,8 @@ FieldCell* Field::GetBestMove()
 			if (GetCell(x, y)->IsEmpty())
 			{
 				Field Copy = *this;
-				Copy.GetCell(x, y)->SetZero();
+				Copy.GetCell(x, y)->SetToken(GameSingleton::Get().GetAIPlayerType());
 				const int32_t Score = Minimax(&Copy, 0, false);
-				//GetCell(x, y)->SetEmpty();
 
 				if (Score > BestScore)
 				{
@@ -320,6 +318,24 @@ std::string Field::GetFieldAsString()
 		FieldDraw += "\n";
 	}
 	return FieldDraw;
+}
+
+EGameResult Field::CheckForGameResult()
+{
+	const EPlayerType PlayerType = GameSingleton::Get().GetPlayerType();
+	if (CheckForWinZero())
+	{
+		return PlayerType == EPlayerType::ZERO ? EGameResult::WIN : EGameResult::LOSE;
+	}
+	if (CheckForWinCross())
+	{
+		return PlayerType == EPlayerType::CROSS ? EGameResult::WIN : EGameResult::LOSE;
+	}
+	if (CheckForDraw())
+	{
+		return EGameResult::DRAW;
+	}
+	return EGameResult::None;
 }
 
 FieldCell* Field::GetCell(int32_t InX, int32_t InY)

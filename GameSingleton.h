@@ -9,6 +9,7 @@ enum class EPlayerType
 	ZERO,
 	CROSS
 };
+
 class GameSingleton
 {
 public:
@@ -20,6 +21,7 @@ public:
 	LevelController& GetLevelController() { return m_LevelController; }
 	Field& GetField() { return m_Field; }
 	EPlayerType GetPlayerType() const { return m_PlayerType; }
+	EPlayerType GetAIPlayerType() const { return m_AIPlayerType; }
 
 private:
 
@@ -28,6 +30,7 @@ private:
 	Field m_Field;
 
 	EPlayerType m_PlayerType = EPlayerType::CROSS;
+	EPlayerType m_AIPlayerType = EPlayerType::ZERO;
 
 // Singleton
 public:
