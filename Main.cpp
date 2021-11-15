@@ -9,6 +9,7 @@ int main()
 	Renderer renderer;
 	Ticker ticker;
 	ticker.AddTickable(&renderer);
+	ticker.AddTickable(&GameSingleton::Get().GetField());
 	
 	while (true)
 	{

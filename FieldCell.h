@@ -1,7 +1,7 @@
 #pragma once
 
 #include <cstdint>
-
+#include <string>
 #include "FieldData.h"
 
 struct FieldCellCoord
@@ -24,6 +24,15 @@ public:
 		m_Coord = Coord;
 	}
 
+	void FillCell()
+	{
+		if (m_Status == EFieldCellStatus::SELECTED)
+		{
+			// gamesingleton.getplayetype
+			m_Status = EFieldCellStatus::CROSS_SELECTED;
+		}
+	}
+
 	void SetSelected()
 	{
 		if (m_Status == EFieldCellStatus::ZERO)
@@ -34,9 +43,49 @@ public:
 		{
 			m_Status = EFieldCellStatus::CROSS_SELECTED;
 		}
+		else
+		{
+			m_Status = EFieldCellStatus::SELECTED;
+		}
 	}
 
-	//void SetStatus(EFieldCellStatus InStatus) { m_Status = InStatus; }
+	void UnSelect()
+	{
+		if (m_Status == EFieldCellStatus::CROSS_SELECTED)
+		{
+			m_Status = EFieldCellStatus::CROSS;
+		}
+		else if (m_Status == EFieldCellStatus::ZERO_SELECTED)
+		{
+			m_Status = EFieldCellStatus::ZERO;
+		}
+		else
+		{
+			m_Status = EFieldCellStatus::EMPTY;
+		}
+	}
+
+	std::string GetSymbol()
+	{
+		if (m_Status == EFieldCellStatus::CROSS)
+		{
+			return "x";
+		}
+		if (m_Status == EFieldCellStatus::ZERO)
+		{
+			return "o";
+		}
+		if (m_Status == EFieldCellStatus::CROSS_SELECTED
+			|| m_Status == EFieldCellStatus::ZERO_SELECTED)
+		{
+			return "!";
+		}
+		if(m_Status == EFieldCellStatus::SELECTED)
+		{
+			return "?";
+		}
+		return " ";
+	}
 	
 private:
 

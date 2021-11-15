@@ -127,6 +127,19 @@ private:
 	int32_t m_CurrentDimentionAmount = DEFAULT_DIMENTION;
 };
 
+class FieldLevel : public ILevel
+{
+	std::string GetLevelAsString() const override
+	{
+		return GameSingleton::Get().GetField().GetFieldAsString();
+	}
+
+	void ProcessInput() override
+	{
+		
+	}
+};
 
 static EntryLevel s_EntryLevel;
 static ChooseDimentionLevel s_ChooseDimentionLevel;
+static FieldLevel s_FieldLevel;
