@@ -7,6 +7,8 @@ enum class Key
 	UP    = 72,
 	DOWN  = 80,
 	ENTER = 13,
+	LEFT  = -5, // to add 
+	RIGHT = -4, // to add 
 
 	MAX
 };
