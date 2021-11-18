@@ -15,17 +15,18 @@ void Field::GenerateCells()
 			m_Cells.emplace_back(FieldCell);
 		}
 	}
-
-	SelectedCell = &m_Cells.at(0);
-	SelectCell();
 }
 
 void Field::Initialize()
 {
-	if (GameSingleton::Get().GetAIPlayerType() == EPlayerType::CROSS) 
+	GenerateCells();
+
+	if (GameSingleton::Get().GetAIPlayerType() == ETokenType::CROSS)
 	{
-		GetBestMove()->FillCell(GameSingleton::Get().GetAIPlayerType());
+		GetBestMove()->SetToken(GameSingleton::Get().GetAIPlayerType());
 	}
+
+	SelectStartCell();
 }
 
 void Field::Tick(float InDeltaTime)
@@ -43,27 +44,27 @@ void Field::ProcessInput()
 	{
 	case Key::UP:
 	{
-		m_YCursor = std::max(0, m_YCursor - 1);
+		m_XCursor = std::max(0, m_XCursor - 1);
 		break;
 	}
 	case Key::DOWN:
 	{
-		m_YCursor = std::min(m_DimentionAmount - 1, m_YCursor + 1);
+		m_XCursor = std::min(m_DimentionAmount - 1, m_XCursor + 1);
 		break;
 	}
 	case Key::LEFT:
 	{
-		m_XCursor = std::max(0, m_XCursor - 1);
+		m_YCursor = std::max(0, m_YCursor - 1);
 		break;
 	}
 	case Key::RIGHT:
 	{
-		m_XCursor = std::min(m_DimentionAmount - 1, m_XCursor + 1);
+		m_YCursor = std::min(m_DimentionAmount - 1, m_YCursor + 1);
 		break;
 	}
 	case Key::ENTER:
 	{
-		if (SelectedCell && !SelectedCell->IsEmpty())
+		if (!IsSelectionEmpty())
 		{
 			break;
 		}
@@ -82,7 +83,7 @@ void Field::ProcessInput()
 			break;
 		}
 
-		GetBestMove()->FillCell(GameSingleton::Get().GetAIPlayerType());
+		GetBestMove()->SetToken(GameSingleton::Get().GetAIPlayerType());
 		if (CheckForWinZero())
 		{
 			GameSingleton::Get().GetLevelController().GoToNextLevel();
@@ -100,23 +101,39 @@ void Field::ProcessInput()
 	default: break;
 	}
 
-	SelectCell();
+	SelectCell(m_XCursor, m_YCursor);
 }
 
-void Field::FillCell(EPlayerType InPlayerType)
+void Field::FillCell(ETokenType InTokenType)
 {
-	_STL_VERIFY(SelectedCell, "[Field]: SelectedCell is nullptr");
-	SelectedCell->FillCell(InPlayerType);
+	_STL_VERIFY(m_SelectedCell, "[Field]: SelectedCell is nullptr");
+	m_SelectedCell->SetToken(InTokenType);
 }
 
-void Field::SelectCell()
+void Field::SelectCell(int32_t InX, int32_t InY)
 {
-	_STL_VERIFY(SelectedCell, "[Field]: SelectedCell is nullptr");
-	SelectedCell->UnSelect();
+	if (m_SelectedCell == nullptr)
+	{
+		m_SelectedCell = GetCell(0, 0);
+	}
 
-	SelectedCell = GetCell(m_YCursor, m_XCursor);
-	_STL_VERIFY(SelectedCell, "[Field]: SelectedCell is nullptr");
-	SelectedCell->Select();
+	_STL_VERIFY(m_SelectedCell, "[Field]: SelectedCell is nullptr");
+	m_SelectedCell->SetSelected(false);
+
+	m_SelectedCell = GetCell(InX, InY);
+	_STL_VERIFY(m_SelectedCell, "[Field]: SelectedCell is nullptr");
+	m_SelectedCell->SetSelected(true);
+}
+
+bool Field::IsSelectionEmpty()
+{
+	_STL_VERIFY(m_SelectedCell, "[Field]: SelectedCell is nullptr");
+	return m_SelectedCell->IsEmpty();
+}
+
+void Field::SelectStartCell()
+{
+	SelectCell(0, 0);
 }
 
 bool Field::CheckForWinCross()
@@ -254,11 +271,11 @@ int32_t Field::Minimax(Field* CopyField, bool IsMaximazing)
 {
 	if (CopyField->CheckForWinZero())
 	{
-		return GameSingleton::Get().GetAIPlayerType() == EPlayerType::CROSS ? -1 : 1;
+		return GameSingleton::Get().GetAIPlayerType() == ETokenType::CROSS ? -1 : 1;
 	}
 	if (CopyField->CheckForWinCross())
 	{
-		return GameSingleton::Get().GetAIPlayerType() == EPlayerType::CROSS ? 1 : -1;
+		return GameSingleton::Get().GetAIPlayerType() == ETokenType::CROSS ? 1 : -1;
 	}
 	if (CopyField->CheckForDraw())
 	{
@@ -352,14 +369,14 @@ std::string Field::GetFieldAsString()
 
 EGameResult Field::CheckForGameResult()
 {
-	const EPlayerType PlayerType = GameSingleton::Get().GetPlayerType();
+	const ETokenType PlayerType = GameSingleton::Get().GetPlayerType();
 	if (CheckForWinZero())
 	{
-		return PlayerType == EPlayerType::ZERO ? EGameResult::WIN : EGameResult::LOSE;
+		return PlayerType == ETokenType::ZERO ? EGameResult::WIN : EGameResult::LOSE;
 	}
 	if (CheckForWinCross())
 	{
-		return PlayerType == EPlayerType::CROSS ? EGameResult::WIN : EGameResult::LOSE;
+		return PlayerType == ETokenType::CROSS ? EGameResult::WIN : EGameResult::LOSE;
 	}
 	if (CheckForDraw())
 	{

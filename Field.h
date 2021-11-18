@@ -7,8 +7,6 @@
 #include "Datas/GameData.h"
 #include "Interfaces/ITickable.h"
 
-enum class EPlayerType;
-
 enum class EGameResult
 {
 	None = -2,
@@ -28,7 +26,6 @@ public:
 	void Tick(float InDeltaTime) override;
 	void ProcessInput();
 
-	void GenerateCells();
 	void SetDimentionAmount(int32_t InDimentionAmount) { m_DimentionAmount = InDimentionAmount; }
 	int32_t GetDimentionAmount() const { return m_DimentionAmount; }
 
@@ -38,8 +35,12 @@ public:
 
 private:
 
-	void FillCell(EPlayerType InPlayerType);
-	void SelectCell();
+	void GenerateCells();
+	void FillCell(ETokenType InTokenType);
+	void SelectCell(int32_t InX, int32_t InY);
+	bool IsSelectionEmpty();
+
+	void SelectStartCell();
 
 	// TODO: it can be refactored, but not today
 	bool CheckForWinCross();
@@ -54,7 +55,7 @@ private:
 
 	std::vector<FieldCell> m_Cells;
 
-	FieldCell* SelectedCell = nullptr;
+	FieldCell* m_SelectedCell = nullptr;
 
 	int32_t m_XCursor = 0;
 	int32_t m_YCursor = 0;

@@ -8,21 +8,20 @@ void GameSingleton::Initialize()
 	srand(static_cast<unsigned int>(std::time(nullptr)));
 
 	const bool IsZero = rand() % 100 % 2 == 0;
-	SetPlayerType(IsZero ? EPlayerType::ZERO : EPlayerType::CROSS);
+	SetPlayerType(IsZero ? ETokenType::ZERO : ETokenType::CROSS);
+
+	m_Field.Initialize();
 
 	m_LevelController.AddLevel(&s_EntryLevel);
 	m_LevelController.AddLevel(&s_ChooseDimentionLevel);
 	m_LevelController.AddLevel(&s_PlayerSideLevel);
 
-	m_Field.GenerateCells();
-	m_Field.Initialize();
-
 	m_LevelController.AddLevel(&s_FieldLevel);
 	m_LevelController.AddLevel(&s_FinishLevel);
 }
 
-void GameSingleton::SetPlayerType(EPlayerType InPlayerType)
+void GameSingleton::SetPlayerType(ETokenType InTokenType)
 {
-	m_PlayerType = InPlayerType;
-	m_AIPlayerType = InPlayerType == EPlayerType::CROSS ? EPlayerType::ZERO : EPlayerType::CROSS;
+	m_PlayerType = InTokenType;
+	m_AIPlayerType = InTokenType == ETokenType::CROSS ? ETokenType::ZERO : ETokenType::CROSS;
 }

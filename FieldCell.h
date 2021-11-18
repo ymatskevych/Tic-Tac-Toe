@@ -3,19 +3,16 @@
 #include <string>
 #include "FieldData.h"
 
-enum class EPlayerType;
+enum class ETokenType;
 
 class FieldCell
 {
 public:
 
-	void FillCell(EPlayerType InPlayerType);
+	//void FillCell(ETokenType InTokenType);
 
-	void Select();
-	void UnSelect();
-
-	void SetToken(EPlayerType InPlayerType);
-
+	void SetSelected(bool InSelect);
+	void SetToken(ETokenType InTokenType);
 	void SetEmpty();
 
 	std::string GetSymbol();
@@ -25,6 +22,9 @@ public:
 	bool IsEmpty() const;
 	
 private:
+
+	void Select();
+	void UnSelect();
 
 	EFieldCellStatus m_Status = EFieldCellStatus::EMPTY;
 };

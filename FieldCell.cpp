@@ -2,59 +2,74 @@
 
 #include "GameSingleton.h"
 
-void FieldCell::FillCell(EPlayerType InPlayerType)
+//void FieldCell::FillCell(ETokenType InTokenType)
+//{
+//	if (InTokenType == ETokenType::ZERO)
+//	{
+//		m_Status = m_Status == EFieldCellStatus::SELECTED ? EFieldCellStatus::ZERO_SELECTED : EFieldCellStatus::ZERO;
+//	}
+//	else if (InTokenType == ETokenType::CROSS)
+//	{
+//		m_Status = m_Status == EFieldCellStatus::SELECTED ? EFieldCellStatus::CROSS_SELECTED : EFieldCellStatus::CROSS;
+//	}
+//}
+
+void FieldCell::SetToken(ETokenType InTokenType)
 {
-	if (InPlayerType == EPlayerType::ZERO)
-	{
-		m_Status = m_Status == EFieldCellStatus::SELECTED ? EFieldCellStatus::ZERO_SELECTED : EFieldCellStatus::ZERO;
-	}
-	else if (InPlayerType == EPlayerType::CROSS)
+	if (InTokenType == ETokenType::CROSS)
 	{
 		m_Status = m_Status == EFieldCellStatus::SELECTED ? EFieldCellStatus::CROSS_SELECTED : EFieldCellStatus::CROSS;
 	}
+	else if (InTokenType == ETokenType::ZERO)
+	{
+		m_Status = m_Status == EFieldCellStatus::SELECTED ? EFieldCellStatus::ZERO_SELECTED : EFieldCellStatus::ZERO;
+	}
+}
+
+void FieldCell::SetSelected(bool InSelect)
+{
+	InSelect ? Select() : UnSelect();
 }
 
 void FieldCell::Select()
 {
-	if (m_Status == EFieldCellStatus::ZERO)
+	switch (m_Status)
 	{
-		m_Status = EFieldCellStatus::ZERO_SELECTED;
-	}
-	else if (m_Status == EFieldCellStatus::CROSS)
-	{
-		m_Status = EFieldCellStatus::CROSS_SELECTED;
-	}
-	else
-	{
-		m_Status = EFieldCellStatus::SELECTED;
+	case EFieldCellStatus::ZERO:
+		{
+			m_Status = EFieldCellStatus::ZERO_SELECTED;
+			break;
+		}
+	case EFieldCellStatus::CROSS:
+		{
+			m_Status = EFieldCellStatus::CROSS_SELECTED;
+			break;
+		}
+	default:
+		{
+			m_Status = EFieldCellStatus::SELECTED;
+		}
 	}
 }
 
 void FieldCell::UnSelect()
 {
-	if (m_Status == EFieldCellStatus::CROSS_SELECTED)
+	switch (m_Status)
 	{
-		m_Status = EFieldCellStatus::CROSS;
-	}
-	else if (m_Status == EFieldCellStatus::ZERO_SELECTED)
-	{
-		m_Status = EFieldCellStatus::ZERO;
-	}
-	else
-	{
-		m_Status = EFieldCellStatus::EMPTY;
-	}
-}
-
-void FieldCell::SetToken(EPlayerType InPlayerType)
-{
-	if (InPlayerType == EPlayerType::CROSS)
-	{
-		m_Status = m_Status == EFieldCellStatus::SELECTED ? EFieldCellStatus::CROSS_SELECTED : EFieldCellStatus::CROSS;
-	}
-	else if (InPlayerType == EPlayerType::ZERO)
-	{
-		m_Status = m_Status == EFieldCellStatus::SELECTED ? EFieldCellStatus::ZERO_SELECTED : EFieldCellStatus::ZERO;
+	case EFieldCellStatus::ZERO_SELECTED:
+		{
+			m_Status = EFieldCellStatus::ZERO;
+			break;
+		}
+	case EFieldCellStatus::CROSS_SELECTED:
+		{
+			m_Status = EFieldCellStatus::CROSS;
+			break;
+		}
+	default:
+		{
+			m_Status = EFieldCellStatus::EMPTY;
+		}
 	}
 }
 

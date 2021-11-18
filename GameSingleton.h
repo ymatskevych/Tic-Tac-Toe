@@ -4,7 +4,7 @@
 #include "LevelController.h"
 #include "Field.h"
 
-enum class EPlayerType
+enum class ETokenType
 {
 	ZERO,
 	CROSS
@@ -20,13 +20,13 @@ public:
 	const LevelController& GetLevelController() const { return m_LevelController; }
 	LevelController& GetLevelController() { return m_LevelController; }
 	Field& GetField() { return m_Field; }
-	EPlayerType GetPlayerType() const { return m_PlayerType; }
-	EPlayerType GetAIPlayerType() const { return m_AIPlayerType; }
+	ETokenType GetPlayerType() const { return m_PlayerType; }
+	ETokenType GetAIPlayerType() const { return m_AIPlayerType; }
 
 	EGameResult GetGameResult() const { return m_GameResult; }
 	void SetGameResult(EGameResult InGameResult) { m_GameResult = InGameResult; }
 
-	void SetPlayerType(EPlayerType InPlayerType);
+	void SetPlayerType(ETokenType InTokenType);
 
 private:
 
@@ -36,8 +36,8 @@ private:
 
 	EGameResult m_GameResult = EGameResult::None;
 
-	EPlayerType m_PlayerType = EPlayerType::CROSS;
-	EPlayerType m_AIPlayerType = EPlayerType::ZERO;
+	ETokenType m_PlayerType = ETokenType::CROSS;
+	ETokenType m_AIPlayerType = ETokenType::ZERO;
 
 // Singleton
 public:

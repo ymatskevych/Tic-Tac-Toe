@@ -149,7 +149,7 @@ public:
 		result += "\n";
 		result += "************************************";
 		result += "\n";
-		result += GameSingleton::Get().GetPlayerType() == EPlayerType::ZERO ? m_ZeroPlay : m_CrossPlay;
+		result += GameSingleton::Get().GetPlayerType() == ETokenType::ZERO ? m_ZeroPlay : m_CrossPlay;
 		result += "\n";
 		result += "************************************";
 		result += "\n";
