@@ -22,6 +22,8 @@ class Field : public ITickable
 {
 public:
 
+	void Initialize();
+
 	// ITickable interface
 	void Tick(float InDeltaTime) override;
 	void ProcessInput();
@@ -51,7 +53,6 @@ private:
 	FieldCell* GetCell(int32_t InX, int32_t InY);
 
 	std::vector<FieldCell> m_Cells;
-	std::vector<FieldCell> m_FreeCells;
 
 	FieldCell* SelectedCell = nullptr;
 

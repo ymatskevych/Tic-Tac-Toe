@@ -20,17 +20,17 @@ public:
 	std::string GetLevelAsString() const override
 	{
 		std::string result;
-		result += "*******";
+		result += "***********";
 		result += GAME_NAME;
-		result += "********";
+		result += "**************";
 		result += "\n";
-		result += "**************************";
+		result += "************************************";
 		result += "\n";
-		result += "*****Press ENTER to*******";
+		result += "**********Press ENTER to************";
 		result += "\n";
-		result += "*****start the game*******";
+		result += "**********start the game************";
 		result += "\n";
-		result += "**************************";
+		result += "************************************";
 		result += "\n";
 
 		return result;
@@ -136,6 +136,50 @@ private:
 	}
 };
 
+class PlayerSideLevel : public ILevel
+{
+public:
+
+	std::string GetLevelAsString() const override
+	{
+		std::string result;
+		result += "************************************";
+		result += "\n";
+		result += "***********YOU*PLAY*****************";
+		result += "\n";
+		result += "************************************";
+		result += "\n";
+		result += GameSingleton::Get().GetPlayerType() == EPlayerType::ZERO ? m_ZeroPlay : m_CrossPlay;
+		result += "\n";
+		result += "************************************";
+		result += "\n";
+		result += "*****press ENTER to continue********";
+		result += "\n";
+		result += "************************************";
+		result += "\n";
+
+		return result;
+	}
+	void ProcessInput() override
+	{
+		const Key LastInput = GameSingleton::Get().GetInputController().GetLastInput();
+
+		switch (LastInput)
+		{
+		case Key::ENTER:
+		{
+			GameSingleton::Get().GetLevelController().GoToNextLevel();
+			break;
+		}
+		default: break;
+		}
+	}
+
+private:
+
+	std::string m_CrossPlay = "************CROSS(x)****************";
+	std::string m_ZeroPlay =  "************ZERO(o)*****************";
+};
 /*
  *  x | o |
  * -----------
@@ -150,7 +194,7 @@ class FieldLevel : public ILevel
 		return GameSingleton::Get().GetField().GetFieldAsString();
 	}
 
-	void ProcessInput() override { }
+	void ProcessInput() override {}
 };
 
 class FinishLevel : public ILevel
@@ -189,3 +233,4 @@ static EntryLevel s_EntryLevel;
 static ChooseDimentionLevel s_ChooseDimentionLevel;
 static FieldLevel s_FieldLevel;
 static FinishLevel s_FinishLevel;
+static PlayerSideLevel s_PlayerSideLevel;

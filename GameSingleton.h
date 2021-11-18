@@ -26,6 +26,8 @@ public:
 	EGameResult GetGameResult() const { return m_GameResult; }
 	void SetGameResult(EGameResult InGameResult) { m_GameResult = InGameResult; }
 
+	void SetPlayerType(EPlayerType InPlayerType);
+
 private:
 
 	InputController m_InputController;
