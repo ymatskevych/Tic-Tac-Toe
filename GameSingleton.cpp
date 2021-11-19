@@ -10,14 +10,17 @@ void GameSingleton::Initialize()
 	const bool IsZero = rand() % 100 % 2 == 0;
 	SetPlayerType(IsZero ? ETokenType::ZERO : ETokenType::CROSS);
 
-	m_Field.Initialize();
-
 	m_LevelController.AddLevel(&s_EntryLevel);
 	m_LevelController.AddLevel(&s_ChooseDimentionLevel);
 	m_LevelController.AddLevel(&s_PlayerSideLevel);
 
 	m_LevelController.AddLevel(&s_FieldLevel);
 	m_LevelController.AddLevel(&s_FinishLevel);
+}
+
+void GameSingleton::InitializeField()
+{
+	m_Field.Initialize();
 }
 
 void GameSingleton::SetPlayerType(ETokenType InTokenType)

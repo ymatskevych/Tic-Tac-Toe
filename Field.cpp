@@ -82,12 +82,24 @@ void Field::ProcessInput()
 			GameSingleton::Get().SetGameResult(EGameResult::WIN);
 			break;
 		}
+		if (CheckForWinZero())
+		{
+			GameSingleton::Get().GetLevelController().GoToNextLevel();
+			GameSingleton::Get().SetGameResult(EGameResult::LOSE);
+			break;
+		}
 
 		GetBestMove()->SetToken(GameSingleton::Get().GetAIPlayerType());
 		if (CheckForWinZero())
 		{
 			GameSingleton::Get().GetLevelController().GoToNextLevel();
 			GameSingleton::Get().SetGameResult(EGameResult::LOSE);
+			break;
+		}
+		if (CheckForWinCross())
+		{
+			GameSingleton::Get().GetLevelController().GoToNextLevel();
+			GameSingleton::Get().SetGameResult(EGameResult::WIN);
 			break;
 		}
 		if (CheckForDraw())
@@ -142,7 +154,7 @@ bool Field::CheckForWinCross()
 	bool IsDiagonal = true;
 	for (int32_t x = 0; x < m_DimentionAmount; ++x)
 	{
-		bool IsRowWinner = true;
+		bool IsColumnWinner = true;
 		for (int32_t y = 0; y < m_DimentionAmount; ++y)
 		{
 			if (!GetCell(x, y)->IsCross() || GetCell(x, y)->IsEmpty())
@@ -151,10 +163,10 @@ bool Field::CheckForWinCross()
 				{
 					IsDiagonal = false;
 				}
-				IsRowWinner = false;
+				IsColumnWinner = false;
 			}
 		}
-		if (IsRowWinner)
+		if (IsColumnWinner)
 		{
 			return true;
 		}
@@ -267,17 +279,26 @@ bool Field::CheckForDraw()
 }
 
 // TODO: Add validity checks
-int32_t Field::Minimax(Field* CopyField, bool IsMaximazing)
+int32_t Field::Minimax(Field* InCopyField, int32_t InDepth, bool IsMaximazing, int32_t InEmptyCellCount)
 {
-	if (CopyField->CheckForWinZero())
+	if (m_DimentionAmount > 5 && InEmptyCellCount > m_DimentionAmount * 2)
+	{
+		return rand() % 5;
+	}
+
+	if (InDepth > 2)
+	{
+		return 0;
+	}
+	if (InCopyField->CheckForWinZero())
 	{
 		return GameSingleton::Get().GetAIPlayerType() == ETokenType::CROSS ? -1 : 1;
 	}
-	if (CopyField->CheckForWinCross())
+	if (InCopyField->CheckForWinCross())
 	{
 		return GameSingleton::Get().GetAIPlayerType() == ETokenType::CROSS ? 1 : -1;
 	}
-	if (CopyField->CheckForDraw())
+	if (InCopyField->CheckForDraw())
 	{
 		return 0;
 	}
@@ -289,10 +310,11 @@ int32_t Field::Minimax(Field* CopyField, bool IsMaximazing)
 		{
 			for (int32_t y = 0; y < m_DimentionAmount; ++y)
 			{
-				if (CopyField->GetCell(x, y)->IsEmpty())
+				if (InCopyField->GetCell(x, y)->IsEmpty())
 				{
-					CopyField->GetCell(x, y)->SetToken(GameSingleton::Get().GetAIPlayerType());
-					BestScore = std::max(BestScore, Minimax(CopyField, false));
+					InCopyField->GetCell(x, y)->SetToken(GameSingleton::Get().GetAIPlayerType());
+					BestScore = std::max(BestScore, Minimax(InCopyField, InDepth + 1, false, InEmptyCellCount));
+					InCopyField->GetCell(x, y)->SetEmpty();
 				}
 			}
 		}
@@ -305,15 +327,32 @@ int32_t Field::Minimax(Field* CopyField, bool IsMaximazing)
 		{
 			for (int32_t y = 0; y < m_DimentionAmount; ++y)
 			{
-				if (CopyField->GetCell(x, y)->IsEmpty())
+				if (InCopyField->GetCell(x, y)->IsEmpty())
 				{
-					CopyField->GetCell(x, y)->SetToken(GameSingleton::Get().GetPlayerType());
-					BestScore = std::min(BestScore, Minimax(CopyField, true));
+					InCopyField->GetCell(x, y)->SetToken(GameSingleton::Get().GetPlayerType());
+					BestScore = std::min(BestScore, Minimax(InCopyField, InDepth + 1, true, InEmptyCellCount));
+					InCopyField->GetCell(x, y)->SetEmpty();
 				}
 			}
 		}
 		return BestScore;
 	}
+}
+
+int32_t Field::CountEmptyCells() 
+{
+	int32_t Counter = 0;
+	for (int32_t x = 0; x < m_DimentionAmount; ++x)
+	{
+		for (int32_t y = 0; y < m_DimentionAmount; ++y)
+		{
+			if (GetCell(x, y)->IsEmpty())
+			{
+				Counter++;
+			}
+		}
+	}
+	return Counter;
 }
 
 FieldCell* Field::GetBestMove()
@@ -329,7 +368,7 @@ FieldCell* Field::GetBestMove()
 			{
 				Field Copy = *this;
 				Copy.GetCell(x, y)->SetToken(GameSingleton::Get().GetAIPlayerType());
-				const int32_t Score = Minimax(&Copy, false);
+				const int32_t Score = Minimax(&Copy, 0, false, CountEmptyCells());
 
 				if (Score > BestScore)
 				{

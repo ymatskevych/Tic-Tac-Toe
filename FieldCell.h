@@ -9,8 +9,6 @@ class FieldCell
 {
 public:
 
-	//void FillCell(ETokenType InTokenType);
-
 	void SetSelected(bool InSelect);
 	void SetToken(ETokenType InTokenType);
 	void SetEmpty();

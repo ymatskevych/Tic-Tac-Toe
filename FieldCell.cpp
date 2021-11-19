@@ -2,18 +2,6 @@
 
 #include "GameSingleton.h"
 
-//void FieldCell::FillCell(ETokenType InTokenType)
-//{
-//	if (InTokenType == ETokenType::ZERO)
-//	{
-//		m_Status = m_Status == EFieldCellStatus::SELECTED ? EFieldCellStatus::ZERO_SELECTED : EFieldCellStatus::ZERO;
-//	}
-//	else if (InTokenType == ETokenType::CROSS)
-//	{
-//		m_Status = m_Status == EFieldCellStatus::SELECTED ? EFieldCellStatus::CROSS_SELECTED : EFieldCellStatus::CROSS;
-//	}
-//}
-
 void FieldCell::SetToken(ETokenType InTokenType)
 {
 	if (InTokenType == ETokenType::CROSS)

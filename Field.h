@@ -47,15 +47,16 @@ private:
 	bool CheckForWinZero();
 	bool CheckForDraw();
 
-	int32_t Minimax(Field* CopyField, bool IsMaximazing);
+	int32_t Minimax(Field* InCopyField, int32_t InDepth, bool IsMaximazing, int32_t EmptyCellCount);
+
+	int32_t CountEmptyCells();
 
 	FieldCell* GetBestMove();
 
 	FieldCell* GetCell(int32_t InX, int32_t InY);
 
 	std::vector<FieldCell> m_Cells;
-
-	FieldCell* m_SelectedCell = nullptr;
+FieldCell* m_SelectedCell = nullptr;
 
 	int32_t m_XCursor = 0;
 	int32_t m_YCursor = 0;

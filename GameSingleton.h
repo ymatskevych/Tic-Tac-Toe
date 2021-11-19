@@ -15,11 +15,14 @@ class GameSingleton
 public:
 
 	void Initialize();
+	void InitializeField();
 
 	const InputController& GetInputController() const { return m_InputController; }
 	const LevelController& GetLevelController() const { return m_LevelController; }
+
 	LevelController& GetLevelController() { return m_LevelController; }
 	Field& GetField() { return m_Field; }
+
 	ETokenType GetPlayerType() const { return m_PlayerType; }
 	ETokenType GetAIPlayerType() const { return m_AIPlayerType; }
 

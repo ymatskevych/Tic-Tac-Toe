@@ -112,6 +112,7 @@ public:
 		case Key::ENTER:
 			{
 			GameSingleton::Get().GetLevelController().GoToNextLevel();
+			GameSingleton::Get().InitializeField();
 			break;
 			}
 		default: return;
