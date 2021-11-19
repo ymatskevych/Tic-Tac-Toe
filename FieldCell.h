@@ -15,14 +15,16 @@ public:
 
 	std::string GetSymbol();
 
-	bool IsCross() const;
-	bool IsZero() const;
+	bool IsTokenType(ETokenType InTokenType) const;
 	bool IsEmpty() const;
 	
 private:
 
 	void Select();
 	void UnSelect();
+
+	bool IsCross() const;
+	bool IsZero() const;
 
 	EFieldCellStatus m_Status = EFieldCellStatus::EMPTY;
 };

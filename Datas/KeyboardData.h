@@ -8,7 +8,7 @@ enum class Key
 	DOWN  = 80,
 	ENTER = 13,
 	LEFT  = 75,
-	RIGHT = 77, // to add 
+	RIGHT = 77, 
 
 	MAX
 };
@@ -16,7 +16,6 @@ enum class Key
 inline bool KeyExist(int32_t InKeyCode)
 {
 	const Key CastedKeyCode = static_cast<Key>(InKeyCode);
-
 	switch (CastedKeyCode)
 	{
 	case Key::UP:

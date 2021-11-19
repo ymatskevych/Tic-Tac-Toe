@@ -96,6 +96,11 @@ std::string FieldCell::GetSymbol()
 	return " ";
 }
 
+bool FieldCell::IsTokenType(ETokenType InTokenType) const
+{
+	return InTokenType == ETokenType::CROSS ? IsCross() : IsZero();
+}
+
 bool FieldCell::IsCross() const
 {
 	return m_Status == EFieldCellStatus::CROSS || m_Status == EFieldCellStatus::CROSS_SELECTED;

@@ -23,7 +23,10 @@ void Field::Initialize()
 
 	if (GameSingleton::Get().GetAIPlayerType() == ETokenType::CROSS)
 	{
-		GetBestMove()->SetToken(GameSingleton::Get().GetAIPlayerType());
+		FieldCell* Cell = GetBestMove();
+		_STL_VERIFY(Cell, "[Field]: Cell in nullptr");
+
+		Cell->SetToken(GameSingleton::Get().GetAIPlayerType());
 	}
 
 	SelectStartCell();
@@ -76,13 +79,13 @@ void Field::ProcessInput()
 			GameSingleton::Get().SetGameResult(EGameResult::DRAW);
 			break;
 		}
-		if (CheckForWinCross())
+		if (CheckForWin(ETokenType::CROSS))
 		{
 			GameSingleton::Get().GetLevelController().GoToNextLevel();
 			GameSingleton::Get().SetGameResult(EGameResult::WIN);
 			break;
 		}
-		if (CheckForWinZero())
+		if (CheckForWin(ETokenType::ZERO))
 		{
 			GameSingleton::Get().GetLevelController().GoToNextLevel();
 			GameSingleton::Get().SetGameResult(EGameResult::LOSE);
@@ -90,16 +93,16 @@ void Field::ProcessInput()
 		}
 
 		GetBestMove()->SetToken(GameSingleton::Get().GetAIPlayerType());
-		if (CheckForWinZero())
-		{
-			GameSingleton::Get().GetLevelController().GoToNextLevel();
-			GameSingleton::Get().SetGameResult(EGameResult::LOSE);
-			break;
-		}
-		if (CheckForWinCross())
+		if (CheckForWin(ETokenType::CROSS))
 		{
 			GameSingleton::Get().GetLevelController().GoToNextLevel();
 			GameSingleton::Get().SetGameResult(EGameResult::WIN);
+			break;
+		}
+		if (CheckForWin(ETokenType::ZERO))
+		{
+			GameSingleton::Get().GetLevelController().GoToNextLevel();
+			GameSingleton::Get().SetGameResult(EGameResult::LOSE);
 			break;
 		}
 		if (CheckForDraw())
@@ -137,7 +140,7 @@ void Field::SelectCell(int32_t InX, int32_t InY)
 	m_SelectedCell->SetSelected(true);
 }
 
-bool Field::IsSelectionEmpty()
+bool Field::IsSelectionEmpty() const
 {
 	_STL_VERIFY(m_SelectedCell, "[Field]: SelectedCell is nullptr");
 	return m_SelectedCell->IsEmpty();
@@ -148,7 +151,7 @@ void Field::SelectStartCell()
 	SelectCell(0, 0);
 }
 
-bool Field::CheckForWinCross()
+bool Field::CheckForWin(ETokenType InTokenType) const
 {
 	// Check columns
 	bool IsDiagonal = true;
@@ -157,7 +160,10 @@ bool Field::CheckForWinCross()
 		bool IsColumnWinner = true;
 		for (int32_t y = 0; y < m_DimentionAmount; ++y)
 		{
-			if (!GetCell(x, y)->IsCross() || GetCell(x, y)->IsEmpty())
+			const FieldCell* Cell = GetCell(x, y);
+			_STL_VERIFY(Cell, "[Field]: Cell is nullptr");
+
+			if (!Cell->IsTokenType(InTokenType) || Cell->IsEmpty())
 			{
 				if (x == y)
 				{
@@ -183,7 +189,10 @@ bool Field::CheckForWinCross()
 		bool IsRowWinner = true;
 		for (int32_t x = 0; x < m_DimentionAmount; ++x)
 		{
-			if (!GetCell(x, y)->IsCross() || GetCell(x, y)->IsEmpty())
+			const FieldCell* Cell = GetCell(x, y);
+			_STL_VERIFY(Cell, "[Field]: Cell is nullptr");
+
+			if (!Cell->IsTokenType(InTokenType) || Cell->IsEmpty())
 			{
 				if (x + y == m_DimentionAmount - 1)
 				{
@@ -205,65 +214,7 @@ bool Field::CheckForWinCross()
 	return false;
 }
 
-bool Field::CheckForWinZero()
-{
-	// Check columns
-	bool IsDiagonal = true;
-	for (int32_t x = 0; x < m_DimentionAmount; ++x)
-	{
-		// column?
-		bool IsRowWinner = true;
-		for (int32_t y = 0; y < m_DimentionAmount; ++y)
-		{
-			if (!GetCell(x, y)->IsZero() || GetCell(x, y)->IsEmpty())
-			{
-				if (x == y)
-				{
-					IsDiagonal = false;
-				}
-				IsRowWinner = false;
-			}
-		}
-		if (IsRowWinner)
-		{
-			return true;
-		}
-	}
-	if (IsDiagonal)
-	{
-		return true;
-	}
-
-	// Check rows
-	IsDiagonal = true;
-	for (int32_t y = 0; y < m_DimentionAmount; ++y)
-	{
-		bool IsRowWinner = true;
-		for (int32_t x = 0; x < m_DimentionAmount; ++x)
-		{
-			if (!GetCell(x, y)->IsZero() || GetCell(x, y)->IsEmpty())
-			{
-				if (x + y == m_DimentionAmount - 1)
-				{
-					IsDiagonal = false;
-				}
-				IsRowWinner = false;
-			}
-		}
-		if (IsRowWinner)
-		{
-			return true;
-		}
-	}
-	if (IsDiagonal)
-	{
-		return true;
-	}
-
-	return false;
-}
-
-bool Field::CheckForDraw()
+bool Field::CheckForDraw() const
 {
 	for (int32_t x = 0; x < m_DimentionAmount; ++x)
 	{
@@ -281,20 +232,24 @@ bool Field::CheckForDraw()
 // TODO: Add validity checks
 int32_t Field::Minimax(Field* InCopyField, int32_t InDepth, bool IsMaximazing, int32_t InEmptyCellCount)
 {
+	/*
+	 * This cool hack was added here because minimax algorithm complexity is too hight
+	 * for hight dimensional tic tac toe :( 
+	 */
 	if (m_DimentionAmount > 5 && InEmptyCellCount > m_DimentionAmount * 2)
 	{
 		return rand() % 5;
 	}
-
 	if (InDepth > 2)
 	{
 		return 0;
 	}
-	if (InCopyField->CheckForWinZero())
+
+	if (InCopyField->CheckForWin(ETokenType::ZERO))
 	{
 		return GameSingleton::Get().GetAIPlayerType() == ETokenType::CROSS ? -1 : 1;
 	}
-	if (InCopyField->CheckForWinCross())
+	if (InCopyField->CheckForWin(ETokenType::CROSS))
 	{
 		return GameSingleton::Get().GetAIPlayerType() == ETokenType::CROSS ? 1 : -1;
 	}
@@ -406,14 +361,14 @@ std::string Field::GetFieldAsString()
 	return FieldDraw;
 }
 
-EGameResult Field::CheckForGameResult()
+EGameResult Field::CheckForGameResult() const
 {
 	const ETokenType PlayerType = GameSingleton::Get().GetPlayerType();
-	if (CheckForWinZero())
+	if (CheckForWin(ETokenType::ZERO))
 	{
 		return PlayerType == ETokenType::ZERO ? EGameResult::WIN : EGameResult::LOSE;
 	}
-	if (CheckForWinCross())
+	if (CheckForWin(ETokenType::CROSS))
 	{
 		return PlayerType == ETokenType::CROSS ? EGameResult::WIN : EGameResult::LOSE;
 	}
@@ -422,6 +377,12 @@ EGameResult Field::CheckForGameResult()
 		return EGameResult::DRAW;
 	}
 	return EGameResult::None;
+}
+
+const FieldCell* Field::GetCell(int32_t InX, int32_t InY) const
+{
+	const int32_t CellIndex = (InX + 1) + m_DimentionAmount * InY;
+	return &m_Cells.at(CellIndex);
 }
 
 FieldCell* Field::GetCell(int32_t InX, int32_t InY)

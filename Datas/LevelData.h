@@ -137,6 +137,15 @@ private:
 	}
 };
 
+/*
+ * 
+ *		   YOU PLAY
+ *
+ *		CROSS(x)/ZERO(o)
+ *
+ *	 press ENTER to continue
+ *
+ */
 class PlayerSideLevel : public ILevel
 {
 public:
@@ -192,7 +201,16 @@ class FieldLevel : public ILevel
 {
 	std::string GetLevelAsString() const override
 	{
-		return GameSingleton::Get().GetField().GetFieldAsString();
+		std::string result;
+		result += "***************************************";
+		result += "\n";
+		result += "**Press**ENTER**to**make**your**move**";
+		result += "\n";
+		result += "***************************************";
+		result += "\n";
+		result += "\n";
+		result += GameSingleton::Get().GetField().GetFieldAsString();
+		return result;
 	}
 
 	void ProcessInput() override {}
