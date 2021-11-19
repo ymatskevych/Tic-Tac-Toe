@@ -13,7 +13,6 @@ void GameSingleton::Initialize()
 	m_LevelController.AddLevel(&s_EntryLevel);
 	m_LevelController.AddLevel(&s_ChooseDimentionLevel);
 	m_LevelController.AddLevel(&s_PlayerSideLevel);
-
 	m_LevelController.AddLevel(&s_FieldLevel);
 	m_LevelController.AddLevel(&s_FinishLevel);
 }

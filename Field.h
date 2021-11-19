@@ -45,6 +45,8 @@ private:
 	bool CheckForWin(ETokenType InTokenType) const;
 	bool CheckForDraw() const;
 
+	void PlaceToken();
+
 	int32_t Minimax(Field* InCopyField, int32_t InDepth, bool IsMaximazing, int32_t EmptyCellCount);
 	FieldCell* GetBestMove();
 
@@ -60,4 +62,6 @@ private:
 	int32_t m_YCursor = 0;
 
 	int32_t m_DimentionAmount = DEFAULT_DIMENTION;
+
+	bool m_Initialized = false;
 };
